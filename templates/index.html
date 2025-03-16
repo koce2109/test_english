@@ -27,6 +27,9 @@
         <form method="POST" action="/result">
             <input type="hidden" name="level" value="{{ level }}"> <!-- Запазваме нивото -->
 
+            <!-- Скрито поле за ID на избраните въпроси -->
+            <input type="hidden" name="selected_questions_ids" value="{{ selected_question_ids }}">
+
             {% for question in questions %}
             <div class="question-container">
                 <label>{{ question[2] }}</label><br>

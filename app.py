@@ -4,7 +4,6 @@ import random
 
 app = Flask(__name__, template_folder='templates')
 
-
 def get_questions(level):
     # Свързване с базата данни и извличане на въпроси за съответното ниво
     conn = sqlite3.connect('questions.db')
@@ -25,7 +24,10 @@ def index():
         questions = get_questions(level)  # Вземаме въпросите за това ниво
         selected_questions = random.sample(questions, 10)  # Вземаме 10 въпроса случайно
 
-        return render_template('index.html', questions=selected_questions, level=level)
+        # Записваме ID-та на избраните въпроси за да ги изпратим в резултатната страница
+        selected_question_ids = [str(question[0]) for question in selected_questions]
+
+        return render_template('index.html', questions=selected_questions, level=level, selected_question_ids=','.join(selected_question_ids))
 
     return render_template('index.html', level=level, questions=questions)
 
@@ -36,14 +38,24 @@ def result():
     answers = request.form.getlist('answers')
     level = request.form.get('level')  # Вземаме нивото от формата
 
-    # Получаваме въпросите от базата
-    questions = get_questions(level)
+    # Вземаме избраните въпроси от сесията
+    selected_questions_ids = request.form.get('selected_questions_ids')  # Добавяме идентификаторите на избраните въпроси
+    selected_questions_ids = selected_questions_ids.split(",")  # Разделяме идентфикаторите на въпросите
+
+    selected_questions = []
+
+    # Свързваме се с базата и вземаме само въпросите с тези идентификатори
+    conn = sqlite3.connect('questions.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM questions WHERE id IN ({})".format(','.join('?' for _ in selected_questions_ids)), selected_questions_ids)
+    selected_questions = cursor.fetchall()
+    conn.close()
 
     # Резултати от теста
     score = 0
     result_data = []
 
-    for question in questions:
+    for question in selected_questions:
         question_id = question[0]
         correct_answer = question[7]  # правилен отговор
         user_answer = request.form.get(f'answers[{question_id}]')  # Получаваме отговора на потребителя
@@ -60,7 +72,6 @@ def result():
             score += 1
 
     return render_template('result.html', score=score, result_data=result_data, level=level)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
