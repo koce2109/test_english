@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import sqlite3
 import random
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 
 def get_questions(level):
