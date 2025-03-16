@@ -3,48 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Резултати</title>
+    <title>Тест по английски</title>
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Резултати от теста за ниво {{ level }}</h1>
-        <h3>Твоят резултат: {{ score }} от {{ result_data|length }}</h3>
+        <h1>Избери ниво на теста</h1>
+        <form action="/" method="POST">
+            <label for="level">Избери ниво:</label>
+            <select name="level" id="level">
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+            </select>
+            <button type="submit">Избери ниво</button>
+        </form>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Въпрос</th>
-                    <th>Отговори</th>
-                    <th>Твоят отговор</th>
-                    <th>Правилен отговор</th>
-                    <th>Резултат</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in result_data %}
-                <tr>
-                    <td>{{ item.question }}</td>
-                    <td>
-                        {% for option in item.options %}
-                            {{ option }} <br>
-                        {% endfor %}
-                    </td>
-                    <td>{{ item.user_answer }}</td>
-                    <td>{{ item.correct_answer }}</td>
-                    <td>
-                        {% if item.is_correct %}
-                            <span class="green">Правилно</span>
-                        {% else %}
-                            <span class="red">Грешно</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if questions %}
+        <h2>Тест по ниво {{ level }}</h2>
+        <form method="POST" action="/result">
+            <input type="hidden" name="level" value="{{ level }}"> <!-- Запазваме нивото -->
 
-        <a href="/">Опитай отново</a>
+            {% for question in questions %}
+            <div class="question-container">
+                <label>{{ question[2] }}</label><br>
+                <div class="answer-options">
+                    <input type="radio" name="answers[{{ question[0] }}]" value="{{ question[3] }}">{{ question[3] }}<br>
+                    <input type="radio" name="answers[{{ question[0] }}]" value="{{ question[4] }}">{{ question[4] }}<br>
+                    <input type="radio" name="answers[{{ question[0] }}]" value="{{ question[5] }}">{{ question[5] }}<br>
+                    <input type="radio" name="answers[{{ question[0] }}]" value="{{ question[6] }}">{{ question[6] }}<br>
+                </div>
+            </div>
+            {% endfor %}
+            <button type="submit">Подай отговори</button>
+        </form>
+        {% endif %}
     </div>
 </body>
 </html>
