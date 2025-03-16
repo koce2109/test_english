@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резултати</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Резултати от теста за ниво {{ level }}</h1>
+        <h3>Твоят резултат: {{ score }} от {{ result_data|length }}</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Въпрос</th>
+                    <th>Отговори</th>
+                    <th>Твоят отговор</th>
+                    <th>Правилен отговор</th>
+                    <th>Резултат</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in result_data %}
+                <tr>
+                    <td>{{ item.question }}</td>
+                    <td>
+                        {% for option in item.options %}
+                            {{ option }} <br>
+                        {% endfor %}
+                    </td>
+                    <td>{{ item.user_answer }}</td>
+                    <td>{{ item.correct_answer }}</td>
+                    <td>
+                        {% if item.is_correct %}
+                            <span class="green">Правилно</span>
+                        {% else %}
+                            <span class="red">Грешно</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="/">Опитай отново</a>
+    </div>
+</body>
+</html>
